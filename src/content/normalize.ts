@@ -1,5 +1,6 @@
 import { CONTENT_SCHEMA_VERSION, defaultContent } from './defaults';
 import { blankContact, blankCustomSection, blankEvent, blankPhoto, blankSocial, newId } from './factory';
+import { NAME_ORDERS } from './types';
 import type {
   ContactNumber,
   CustomSectionStyle,
@@ -139,6 +140,7 @@ export function normalizeContent(raw: unknown): SiteContent {
   content.opening.emblem = oneOf(content.opening.emblem, EMBLEM_STYLES, base.opening.emblem);
 
   content.welcome.photoFocus = oneOf(content.welcome.photoFocus, PHOTO_FOCUS, 'center');
+  content.couple.nameOrder = oneOf(content.couple.nameOrder, NAME_ORDERS, 'bride-first');
 
   content.events = list<WeddingEvent>(raw.events, base.events, normalizeEvent);
 

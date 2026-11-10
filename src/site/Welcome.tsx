@@ -2,6 +2,7 @@ import { Flourish, OmArt } from '../art/Art';
 import { ARCH_WIDTH, archMask, archPath } from '../art/arch';
 import peonyCorner from '../assets/art/peony-corner.webp';
 import peonyLarge from '../assets/art/peony-large.webp';
+import { orderedNames } from '../content/names';
 import type { SiteContent } from '../content/types';
 import { useCountdown } from '../hooks/useCountdown';
 import { istDateTimeToEpoch } from '../lib/dates';
@@ -119,6 +120,7 @@ interface WelcomeProps {
 
 export function Welcome({ content, hasEvents, hasGallery }: WelcomeProps) {
   const { couple, welcome } = content;
+  const [firstName, secondName] = orderedNames(couple);
   const background = assetUrl(welcome.backgroundImage);
 
   return (
@@ -139,7 +141,7 @@ export function Welcome({ content, hasEvents, hasGallery }: WelcomeProps) {
             <OmArt className="mx-auto h-9 w-auto text-wine-700" label="Om" />
             {welcome.eyebrow ? <p className="eyebrow mt-4 text-gold-700">{welcome.eyebrow}</p> : null}
           </div>
-          <ArchPhoto src={assetUrl(welcome.photo)} alt={`${couple.brideName} and ${couple.groomName}`} focus={welcome.photoFocus} />
+          <ArchPhoto src={assetUrl(welcome.photo)} alt={`${firstName} and ${secondName}`} focus={welcome.photoFocus} />
         </div>
 
         <div className="mt-14 lg:order-2 lg:mt-0">
@@ -149,11 +151,11 @@ export function Welcome({ content, hasEvents, hasGallery }: WelcomeProps) {
           </div>
 
           <h2 id="welcome-names" className="names mt-4 text-wine-800" style={{ fontSize: 'clamp(1.9rem, 8.6vw, 3.1rem)' }} data-reveal>
-            <span className="block">{couple.brideName}</span>
+            <span className="block">{firstName}</span>
             <span className="block font-serif italic text-gold-500" style={{ fontSize: '0.75em' }} aria-label="and">
               &amp;
             </span>
-            <span className="block">{couple.groomName}</span>
+            <span className="block">{secondName}</span>
           </h2>
 
           {couple.brideParents || couple.groomParents ? (

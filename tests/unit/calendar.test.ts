@@ -5,16 +5,18 @@ import { buildIcs, eventTiming, googleCalendarUrl, icsFileName } from '../../src
 import { directionsUrl } from '../../src/lib/links';
 
 const [sagai, sangeet, wedding] = defaultContent.events;
-const NAMES = 'Shaifali Singh & Nitin Kaushik';
+// An event whose timing has not been confirmed yet.
+const untimed = { ...sangeet, schedule: [], timeNote: 'Timing to be announced' };
+const NAMES = 'Nitin Kaushik & Shaifali Singh';
 const SITE = 'https://example.com/';
 
 describe('event timing', () => {
   it('starts at the earliest time in the schedule and ends an hour after the last', () => {
     const timing = eventTiming(wedding);
     expect(timing.allDay).toBe(false);
-    expect(timing.startTime).toBe('10:00');
-    expect(new Date(timing.startEpoch!).toISOString()).toBe('2026-12-05T04:30:00.000Z'); // 10:00 AM IST
-    expect(new Date(timing.endEpoch!).toISOString()).toBe('2026-12-05T12:30:00.000Z'); // 6:00 PM IST, one hour after Vidai
+    expect(timing.startTime).toBe('08:30');
+    expect(new Date(timing.startEpoch!).toISOString()).toBe('2026-12-05T03:00:00.000Z'); // 8:30 AM IST
+    expect(new Date(timing.endEpoch!).toISOString()).toBe('2026-12-05T08:00:00.000Z'); // 1:30 PM IST, one hour after lunch
   });
 
   it('handles the Sagai', () => {
@@ -24,7 +26,8 @@ describe('event timing', () => {
   });
 
   it('treats an event without timings as a whole day, inventing nothing', () => {
-    expect(eventTiming(sangeet)).toEqual({ allDay: true, startEpoch: null, endEpoch: null, startTime: '' });
+    expect(eventTiming(untimed)).toEqual({ allDay: true, startEpoch: null, endEpoch: null, startTime: '' });
+    expect(new Date(eventTiming(sangeet).startEpoch!).toISOString()).toBe('2026-12-03T12:30:00.000Z'); // 6:00 PM IST
   });
 
   it('uses the optional end time when it is given', () => {
@@ -47,15 +50,15 @@ describe('Google Calendar link', () => {
     const url = new URL(googleCalendarUrl(wedding, NAMES, SITE));
     expect(url.origin + url.pathname).toBe('https://calendar.google.com/calendar/render');
     expect(url.searchParams.get('action')).toBe('TEMPLATE');
-    expect(url.searchParams.get('dates')).toBe('20261205T043000Z/20261205T123000Z');
+    expect(url.searchParams.get('dates')).toBe('20261205T030000Z/20261205T080000Z');
     expect(url.searchParams.get('ctz')).toBe('Asia/Kolkata');
-    expect(url.searchParams.get('text')).toBe('Wedding | Shaifali Singh & Nitin Kaushik');
+    expect(url.searchParams.get('text')).toBe('Wedding | Nitin Kaushik & Shaifali Singh');
     expect(url.searchParams.get('location')).toBe(`Golden Moments Banquet, ${GOLDEN_MOMENTS_ADDRESS}`);
-    expect(url.searchParams.get('details')).toContain('11:30 AM - Jaimala');
+    expect(url.searchParams.get('details')).toContain('9:00 AM - Ghurchari');
   });
 
   it('is an all-day entry when the timing is not confirmed', () => {
-    const url = new URL(googleCalendarUrl(sangeet, NAMES, SITE));
+    const url = new URL(googleCalendarUrl(untimed, NAMES, SITE));
     expect(url.searchParams.get('dates')).toBe('20261203/20261204');
     expect(url.searchParams.get('details')).toContain('Timing to be announced');
   });
@@ -72,10 +75,10 @@ describe('.ics calendar file', () => {
     expect(ics.startsWith('BEGIN:VCALENDAR\r\nVERSION:2.0\r\n')).toBe(true);
     expect(ics.endsWith('END:VCALENDAR\r\n')).toBe(true);
     expect(ics.match(/BEGIN:VEVENT/g)).toHaveLength(1);
-    expect(ics).toContain('DTSTART:20261205T043000Z');
-    expect(ics).toContain('DTEND:20261205T123000Z');
+    expect(ics).toContain('DTSTART:20261205T030000Z');
+    expect(ics).toContain('DTEND:20261205T080000Z');
     expect(ics).toContain('DTSTAMP:20261106T000000Z');
-    expect(ics).toContain('SUMMARY:Wedding | Shaifali Singh & Nitin Kaushik');
+    expect(ics).toContain('SUMMARY:Wedding | Nitin Kaushik & Shaifali Singh');
   });
 
   it('escapes commas and keeps every line within 75 bytes', () => {
@@ -85,11 +88,11 @@ describe('.ics calendar file', () => {
 
   it('unfolds back to the full description', () => {
     const unfolded = ics.replace(/\r\n /g, '');
-    expect(unfolded).toContain('10:00 AM - Baraat Welcome\\n11:30 AM - Jaimala\\n1:00 PM - Lunch\\n1:00 PM - Phere\\n5:00 PM - Vidai');
+    expect(unfolded).toContain('8:30 AM - Sehrabandi\\n9:00 AM - Ghurchari\\n9:30 AM - Departure of Baraat\\n12:30 PM - Lunch');
   });
 
   it('uses whole-day dates when there are no timings', () => {
-    const allDay = buildIcs(sangeet, NAMES, SITE);
+    const allDay = buildIcs(untimed, NAMES, SITE);
     expect(allDay).toContain('DTSTART;VALUE=DATE:20261203');
     expect(allDay).toContain('DTEND;VALUE=DATE:20261204');
   });

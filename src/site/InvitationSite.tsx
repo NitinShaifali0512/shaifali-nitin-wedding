@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { coupleNames as joinCoupleNames } from '../content/names';
 import type { SectionConfig, SiteContent } from '../content/types';
 import { useMusic } from '../hooks/useMusic';
 import { isPreviewFrame, usePublishedContent } from '../hooks/usePublishedContent';
@@ -45,7 +46,7 @@ export function InvitationSite() {
   const [showPetals, setShowPetals] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
-  const coupleNames = [content.couple.brideName, content.couple.groomName].filter(Boolean).join(' & ');
+  const coupleNames = joinCoupleNames(content.couple);
   const music = useMusic(content.music, coupleNames);
   useReveal(ready && phase !== 'closed');
 

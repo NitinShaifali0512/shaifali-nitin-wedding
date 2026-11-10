@@ -293,13 +293,12 @@ async function openInvitation(page, url = SITE) {
   });
 
   group('5. Sangeet event');
-  await check('shows the date and venue, and "Timing to be announced" instead of invented times', async () => {
+  await check('shows the date, the venue and the 6 PM start', async () => {
     const text = await eventText('sangeet');
-    for (const wanted of ['Sangeet', 'THURSDAY', 'DEC', '3', '2026', 'The Grand Paris Banquets', GRAND_PARIS]) {
+    for (const wanted of ['Sangeet', 'THURSDAY', 'DEC', '3', '2026', 'AT 6 PM', 'Sangeet 6:00 PM', 'The Grand Paris Banquets', GRAND_PARIS]) {
       expect(text.toLowerCase().includes(wanted.toLowerCase()), `Sangeet does not show "${wanted}"`);
     }
-    equal((await page.getByTestId('event-sangeet').getByTestId('time-note').innerText()).toLowerCase(), 'timing to be announced', 'timing note');
-    expect(!/\d{1,2}:\d{2}\s?(AM|PM)/i.test(text), 'Sangeet shows a clock time although none is confirmed');
+    expect(!/Timing to be announced/i.test(text), 'Sangeet still says the timing is to be announced');
   });
   await check('uses the festive design with moving lights and equaliser', async () => {
     const sangeet = page.getByTestId('event-sangeet');
@@ -308,9 +307,9 @@ async function openInvitation(page, url = SITE) {
   });
 
   group('6. Wedding event');
-  await check('shows the name, date, day and all five schedule entries', async () => {
+  await check('shows the name, date, day, the baraat note and all four schedule entries', async () => {
     const text = await eventText('wedding');
-    for (const wanted of ['Wedding', 'SATURDAY', 'DEC', '5', '2026', 'AT 10 AM', 'Baraat Welcome 10:00 AM', 'Jaimala 11:30 AM', 'Lunch 1:00 PM', 'Phere 1:00 PM', 'Vidai 5:00 PM']) {
+    for (const wanted of ['Wedding', 'SATURDAY', 'DEC', '5', '2026', 'AT 8:30 AM', 'Sehrabandi 8:30 AM', 'Ghurchari 9:00 AM', 'Departure of Baraat 9:30 AM', 'Lunch 12:30 PM', 'C-704, Mayur Dhwaj Apartment', 'Patparganj, Delhi 110092']) {
       expect(text.toLowerCase().includes(wanted.toLowerCase()), `Wedding does not show "${wanted}"`);
     }
     expect(await page.getByTestId('event-wedding').evaluate((el) => el.classList.contains('event--royal')), 'Wedding is not using the royal style');
@@ -348,7 +347,7 @@ async function openInvitation(page, url = SITE) {
     const p = await abroad.newPage();
     await openInvitation(p);
     const text = (await p.getByTestId('event-wedding').innerText()).replace(/\s+/g, ' ');
-    expect(/SATURDAY/i.test(text) && text.includes('10:00 AM') && /DEC 5 2026/i.test(text.replace(/SATURDAY|AT 10 AM/gi, '').replace(/\s+/g, ' ')), 'the wedding date changed for a guest abroad');
+    expect(/SATURDAY/i.test(text) && text.includes('8:30 AM') && /DEC 5 2026/i.test(text.replace(/SATURDAY|AT 8:30 AM/gi, '').replace(/\s+/g, ' ')), 'the wedding date changed for a guest abroad');
     const here = Number(/(\d+) days?/.exec(await page.locator('[role="timer"]').getAttribute('aria-label'))[1]);
     const there = Number(/(\d+) days?/.exec(await p.locator('[role="timer"]').getAttribute('aria-label'))[1]);
     equal(there, here, 'days left for a guest abroad');
@@ -357,7 +356,7 @@ async function openInvitation(page, url = SITE) {
   await check('at the wedding moment the countdown gives way to the celebration message', async () => {
     const future = await browser.newContext({ ...devices['Pixel 7'] });
     const p = await future.newPage();
-    await p.clock.install({ time: new Date('2026-12-05T04:29:55Z') });
+    await p.clock.install({ time: new Date('2026-12-05T02:59:55Z') }); // 8:29:55 AM IST
     await p.goto(`${SITE}/?skipCover`, { waitUntil: 'load' });
     await p.getByTestId('countdown').waitFor({ timeout: 6000 });
     await p.clock.runFor(8000);
@@ -384,8 +383,8 @@ async function openInvitation(page, url = SITE) {
   await check('"Add to Google Calendar" carries the right date and time for each event', async () => {
     const dates = async (id) => new URL(await href(id, 'google-calendar')).searchParams.get('dates');
     equal(await dates('sagai'), '20261121T053000Z/20261121T083000Z', 'Sagai (11:00 AM to 2:00 PM IST)');
-    equal(await dates('sangeet'), '20261203/20261204', 'Sangeet (all day, timing not confirmed)');
-    equal(await dates('wedding'), '20261205T043000Z/20261205T123000Z', 'Wedding (10:00 AM to 6:00 PM IST)');
+    equal(await dates('sangeet'), '20261203T123000Z/20261203T153000Z', 'Sangeet (6:00 PM to 9:00 PM IST)');
+    equal(await dates('wedding'), '20261205T030000Z/20261205T080000Z', 'Wedding (8:30 AM to 1:30 PM IST)');
     const wedding = new URL(await href('wedding', 'google-calendar'));
     expect(wedding.searchParams.get('location').includes(GOLDEN_MOMENTS), 'calendar location is wrong');
     equal(wedding.searchParams.get('ctz'), 'Asia/Kolkata', 'calendar time zone');
@@ -394,11 +393,11 @@ async function openInvitation(page, url = SITE) {
     const [download] = await Promise.all([page.waitForEvent('download'), page.getByTestId('event-wedding').getByTestId('download-ics').click()]);
     equal(download.suggestedFilename(), 'wedding.ics', 'file name');
     const text = fs.readFileSync(await download.path(), 'utf8');
-    for (const wanted of ['BEGIN:VCALENDAR', 'BEGIN:VEVENT', 'DTSTART:20261205T043000Z', 'DTEND:20261205T123000Z', 'SUMMARY:Wedding | Shaifali Singh & Nitin Kaushik', 'END:VCALENDAR']) {
+    for (const wanted of ['BEGIN:VCALENDAR', 'BEGIN:VEVENT', 'DTSTART:20261205T030000Z', 'DTEND:20261205T080000Z', 'SUMMARY:Wedding | Nitin Kaushik & Shaifali Singh', 'END:VCALENDAR']) {
       expect(text.includes(wanted), `the calendar file lacks ${wanted}`);
     }
     const [second] = await Promise.all([page.waitForEvent('download'), page.getByTestId('event-sangeet').getByTestId('download-ics').click()]);
-    expect(fs.readFileSync(await second.path(), 'utf8').includes('DTSTART;VALUE=DATE:20261203'), 'the Sangeet calendar file should be an all-day entry');
+    expect(fs.readFileSync(await second.path(), 'utf8').includes('DTSTART:20261203T123000Z'), 'the Sangeet calendar file should start at 6 PM IST');
   });
   await check('"Copy address" copies the venue and address', async () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: SITE });
@@ -814,7 +813,7 @@ async function openInvitation(page, url = SITE) {
     await guest.getByTestId('open-invitation').click();
     await guest.getByTestId('cover').waitFor({ state: 'detached', timeout: 6000 });
     const text = (await guest.locator('body').innerText()).replace(/\s+/g, ' ');
-    for (const wanted of ['overjoyed to invite you', 'Daughter of Mr and Mrs Singh', 'Haldi', 'FRIDAY', 'At home', 'Dance performances 7:30 PM', 'Glitter and glam', 'Getting There', 'Vaishali metro station', 'Thank You So Much', 'With all our love', 'Nitin 98975 32301', 'Our new favourite']) {
+    for (const wanted of ['overjoyed to invite you', 'Daughter of Mr and Mrs Singh', 'Haldi', 'FRIDAY', 'At home', 'Dance performances 7:30 PM', 'Glitter and glam', 'Getting There', 'Vaishali metro station', 'Thank You So Much', 'With all our love', 'Nitin 98100 07038', 'Our new favourite']) {
       expect(text.toLowerCase().includes(wanted.toLowerCase()), `guests do not see "${wanted}"`);
     }
     expect((await guest.getByTestId('countdown').count()) === 0, 'the countdown is still shown');
@@ -841,7 +840,7 @@ async function openInvitation(page, url = SITE) {
     equal(maps.searchParams.get('destination'), 'At home', 'directions for the new event');
     equal(new URL(await haldi.getByTestId('google-calendar').getAttribute('href')).searchParams.get('dates'), '20261204/20261205', 'calendar dates for the new event');
     const sangeet = new URL(await guest.getByTestId('event-sangeet').getByTestId('google-calendar').getAttribute('href'));
-    equal(sangeet.searchParams.get('dates'), '20261203T140000Z/20261203T170000Z', 'Sangeet calendar after a 7:30 PM timing was added');
+    equal(sangeet.searchParams.get('dates'), '20261203T123000Z/20261203T150000Z', 'Sangeet calendar after a 7:30 PM timing was added');
   });
   await guest.locator('article.event', { hasText: 'Haldi' }).scrollIntoViewIfNeeded();
   await sleep(500);
@@ -964,13 +963,13 @@ async function openInvitation(page, url = SITE) {
   const html = fs.readFileSync(path.join(ROOT, 'dist-e2e/index.html'), 'utf8');
   const meta = (property) => (new RegExp(`<meta (?:property|name)="${property}" content="([^"]*)"`).exec(html) || [])[1];
   await check('the page carries a proper title, description and absolute thumbnail address', async () => {
-    equal(meta('og:title'), 'Shaifali Singh &amp; Nitin Kaushik | Wedding Invitation', 'og:title');
+    equal(meta('og:title'), 'Nitin Kaushik &amp; Shaifali Singh | Wedding Invitation', 'og:title');
     expect(meta('og:description').includes('Saturday, 5 December 2026'), 'og:description lacks the date');
     equal(meta('og:image'), 'https://shaifali-nitin.example/og-image.jpg', 'og:image');
     equal(meta('og:url'), 'https://shaifali-nitin.example/', 'og:url');
     equal(meta('og:type'), 'website', 'og:type');
     equal(meta('twitter:card'), 'summary_large_image', 'twitter:card');
-    expect(/<title>Shaifali Singh &amp; Nitin Kaushik \| Wedding Invitation<\/title>/.test(html), 'the page title is wrong');
+    expect(/<title>Nitin Kaushik &amp; Shaifali Singh \| Wedding Invitation<\/title>/.test(html), 'the page title is wrong');
   });
   await check('the preview tags are in the page itself, so WhatsApp can read them without running scripts', async () => {
     const raw = await (await fetch(SITE, { headers: { 'User-Agent': 'WhatsApp/2.23.20.0' } })).text();
@@ -993,7 +992,7 @@ async function openInvitation(page, url = SITE) {
     const share = new URL(await p.getByTestId('whatsapp-share').getAttribute('href'));
     equal(share.origin + share.pathname, 'https://wa.me/', 'share address');
     const text = share.searchParams.get('text');
-    expect(text.includes('We are getting married!') && text.includes('https://shaifali-nitin.example/') && text.includes('Shaifali & Nitin') && !text.includes('{link}'), `unexpected share text: ${text}`);
+    expect(text.includes('We are getting married!') && text.includes('https://shaifali-nitin.example/') && text.includes('Nitin & Shaifali') && !text.includes('{link}'), `unexpected share text: ${text}`);
     await fresh.close();
   });
   await check('the shared link opens the invitation, and a link to #rsvp lands on the RSVP form', async () => {

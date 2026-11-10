@@ -1,6 +1,7 @@
 import { Check, Link2, Phone } from 'lucide-react';
 import { useState } from 'react';
 import { Flourish, Monogram } from '../art/Art';
+import { orderedNames } from '../content/names';
 import type { SiteContent } from '../content/types';
 import { SANDBOX_PREVIEW } from '../lib/config';
 import { formatDate, parseDate } from '../lib/dates';
@@ -9,6 +10,7 @@ import { WhatsAppIcon } from './WhatsAppIcon';
 
 export function Footer({ content }: { content: SiteContent }) {
   const { footer, couple, share } = content;
+  const [firstName, secondName] = orderedNames(couple);
   const [copied, setCopied] = useState(false);
   if (!footer.visible) return null;
 
@@ -59,11 +61,11 @@ export function Footer({ content }: { content: SiteContent }) {
         <Flourish className="my-8 text-gold-300" />
 
         <p className="names text-cream" style={{ fontSize: 'clamp(1.35rem, 6vw, 1.9rem)' }}>
-          <span className="block">{couple.brideName}</span>
+          <span className="block">{firstName}</span>
           <span className="block font-serif italic text-gold-300" aria-label="and">
             &amp;
           </span>
-          <span className="block">{couple.groomName}</span>
+          <span className="block">{secondName}</span>
         </p>
 
         {dates.length > 0 ? (
@@ -154,7 +156,7 @@ export function Footer({ content }: { content: SiteContent }) {
             {footer.closingLine},
             <br />
             <span className="not-italic">
-              {couple.brideName.split(' ')[0]} &amp; {couple.groomName.split(' ')[0]}
+              {firstName.split(' ')[0]} &amp; {secondName.split(' ')[0]}
             </span>
           </p>
         ) : null}

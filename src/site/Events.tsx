@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ArchPanel, Flourish, OmArt, RingsDoodle } from '../art/Art';
 import peonyCorner from '../assets/art/peony-corner.webp';
 import peonyLarge from '../assets/art/peony-large.webp';
+import { coupleNames as joinCoupleNames } from '../content/names';
 import type { SiteContent, WeddingEvent } from '../content/types';
 import { downloadIcs, eventTiming, googleCalendarUrl } from '../lib/calendar';
 import { formatTime, formatTimeShort } from '../lib/dates';
@@ -304,7 +305,7 @@ function EventBlock({ event, coupleNames }: { event: WeddingEvent; coupleNames: 
 export function Events({ content }: { content: SiteContent }) {
   const events = content.events.filter((event) => event.visible);
   const { eventsIntro, couple } = content;
-  const coupleNames = [couple.brideName, couple.groomName].filter(Boolean).join(' & ');
+  const coupleNames = joinCoupleNames(couple);
 
   return (
     <section id="events" aria-labelledby="events-heading">

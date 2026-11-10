@@ -11,24 +11,24 @@ describe('starting content', () => {
   it('uses the names and details the couple gave', () => {
     expect(defaultContent.couple.brideName).toBe('Shaifali Singh');
     expect(defaultContent.couple.groomName).toBe('Nitin Kaushik');
+    expect(defaultContent.couple.nameOrder).toBe('groom-first');
     expect(defaultContent.events.map((event) => [event.name, event.date])).toEqual([
       ['Sagai', '2026-11-21'],
       ['Sangeet', '2026-12-03'],
       ['Wedding', '2026-12-05'],
     ]);
     expect(defaultContent.events[0].schedule.map((item) => `${item.time} ${item.label}`)).toEqual(['11:00 Sagai', '12:30 Ring Exchange', '13:00 Lunch']);
-    expect(defaultContent.events[1].schedule).toEqual([]);
-    expect(defaultContent.events[1].timeNote).toBe('Timing to be announced');
+    expect(defaultContent.events[1].schedule.map((item) => `${item.time} ${item.label}`)).toEqual(['18:00 Sangeet']);
+    expect(defaultContent.events[1].timeNote).toBe('6 PM onwards');
     expect(defaultContent.events[2].schedule.map((item) => `${item.time} ${item.label}`)).toEqual([
-      '10:00 Baraat Welcome',
-      '11:30 Jaimala',
-      '13:00 Lunch',
-      '13:00 Phere',
-      '17:00 Vidai',
+      '08:30 Sehrabandi',
+      '09:00 Ghurchari',
+      '09:30 Departure of Baraat',
+      '12:30 Lunch',
     ]);
     expect(defaultContent.events[0].dressCode).toBe('Pastel');
-    expect(defaultContent.countdown.target).toBe('2026-12-05T10:00');
-    expect(defaultContent.footer.contacts.map((contact) => contact.phone)).toEqual(['9650086438', '9810007038', '9873483646']);
+    expect(defaultContent.countdown.target).toBe('2026-12-05T08:30');
+    expect(defaultContent.footer.contacts.map((contact) => contact.phone)).toEqual(['9810007038', '9873483646', '9650086438']);
     expect(defaultContent.rsvp.heading).toBe('Will You Be There To Celebrate With Us?');
   });
 

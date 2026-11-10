@@ -19,6 +19,9 @@ export type CustomSectionStyle = 'ivory' | 'blush' | 'wine';
 
 export type EmblemStyle = 'ganesha' | 'medallion' | 'om' | 'none';
 
+export const NAME_ORDERS = ['bride-first', 'groom-first'] as const;
+export type NameOrder = (typeof NAME_ORDERS)[number];
+
 export type PhotoFocus = 'center' | 'left' | 'right' | 'top' | 'bottom';
 
 export interface ScheduleItem {
@@ -98,6 +101,8 @@ export interface SiteContent {
   couple: {
     brideName: string;
     groomName: string;
+    /** Whose name is written first wherever the two names appear together. */
+    nameOrder: NameOrder;
     /** Short initials used when no monogram image is set. */
     monogram: string;
     /** Monogram artwork. Empty string falls back to the initials above. */

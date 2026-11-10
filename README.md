@@ -1,6 +1,6 @@
-# Shaifali & Nitin: Wedding Invitation Website
+# Nitin & Shaifali: Wedding Invitation Website
 
-A digital wedding invitation for **Shaifali Singh** and **Nitin Kaushik**, made to be shared on WhatsApp and opened on a phone. It comes with a private dashboard at `/admin`, where every word, date, address, photograph and the music can be changed without touching code.
+A digital wedding invitation for **Nitin Kaushik** and **Shaifali Singh**, made to be shared on WhatsApp and opened on a phone. It comes with a private dashboard at `/admin`, where every word, date, address, photograph and the music can be changed without touching code.
 
 - **Sagai:** Saturday, 21 November 2026, The Grand Paris Banquets
 - **Sangeet:** Thursday, 3 December 2026, The Grand Paris Banquets
@@ -134,7 +134,6 @@ Send the link to yourself on WhatsApp. You should see the invitation thumbnail, 
 | A Vercel or Netlify account | Serves the website | Step 6 |
 | Your email address and a password | Your dashboard sign-in | Step 3 |
 | Original, full-size photographs | The printed card only held small copies | Upload in the dashboard under Gallery and Welcome |
-| Sangeet timing, when confirmed | It currently says "Timing to be announced" | Dashboard, Events, Sangeet |
 | Optional: your own domain name | A nicer link for WhatsApp | Step 6 |
 | Optional: your own music track | If you prefer a specific song you have permission to use | Dashboard, Music |
 

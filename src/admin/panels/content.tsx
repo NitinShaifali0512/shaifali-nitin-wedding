@@ -53,6 +53,16 @@ export function CouplePanel({ editor }: PanelProps) {
             <TextField label="Bride's name" value={couple.brideName} onChange={(v) => update((d) => void (d.couple.brideName = v))} />
             <TextField label="Groom's name" value={couple.groomName} onChange={(v) => update((d) => void (d.couple.groomName = v))} />
           </Grid>
+          <SelectField
+            label="Whose name comes first"
+            value={couple.nameOrder}
+            onChange={(v) => update((d) => void (d.couple.nameOrder = v))}
+            options={[
+              { value: 'groom-first', label: `${couple.groomName || 'Groom'} & ${couple.brideName || 'Bride'}` },
+              { value: 'bride-first', label: `${couple.brideName || 'Bride'} & ${couple.groomName || 'Groom'}` },
+            ]}
+            hint="Applies everywhere the two names appear together: the cover, the welcome page, the footer and calendar entries."
+          />
           <Grid>
             <TextField
               label="Bride's parents (optional)"

@@ -3,6 +3,7 @@ import { GaneshaArt, Monogram, OmArt } from '../art/Art';
 import ganeshMedallion from '../assets/art/ganesh-medallion.webp';
 import peonyCorner from '../assets/art/peony-corner.webp';
 import peonyLarge from '../assets/art/peony-large.webp';
+import { orderedNames } from '../content/names';
 import type { SiteContent } from '../content/types';
 import { assetUrl } from '../lib/links';
 
@@ -46,6 +47,7 @@ function Emblem({ kind }: { kind: SiteContent['opening']['emblem'] }) {
 export function Cover({ content, phase, onOpen }: CoverProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { couple, opening } = content;
+  const [firstName, secondName] = orderedNames(couple);
   const background = assetUrl(opening.backgroundImage);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export function Cover({ content, phase, onOpen }: CoverProps) {
       className={`cover ${phase === 'opening' ? 'is-opening' : ''}`}
       role="dialog"
       aria-modal="true"
-      aria-label={`Wedding invitation of ${couple.brideName} and ${couple.groomName}`}
+      aria-label={`Wedding invitation of ${firstName} and ${secondName}`}
       data-testid="cover"
     >
       <div className="cover-doors" aria-hidden="true">
@@ -100,7 +102,7 @@ export function Cover({ content, phase, onOpen }: CoverProps) {
           ) : null}
 
           <h1 className="names text-cream" style={{ fontSize: 'clamp(1.55rem, min(7.4vw, 4.6vh), 2.7rem)' }}>
-            <span className="block">{couple.brideName}</span>
+            <span className="block">{firstName}</span>
             <span
               className="block font-serif italic text-gold-300"
               style={{ fontSize: '0.8em', lineHeight: 1.25 }}
@@ -108,7 +110,7 @@ export function Cover({ content, phase, onOpen }: CoverProps) {
             >
               &amp;
             </span>
-            <span className="block">{couple.groomName}</span>
+            <span className="block">{secondName}</span>
           </h1>
 
           {opening.message ? (
