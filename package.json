@@ -1,0 +1,41 @@
+{
+  "name": "shaifali-nitin-wedding",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Digital wedding invitation for Shaifali Singh & Nitin Kaushik, with a private admin dashboard.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:security": "cd tests/backend && npm install --no-audit --no-fund && npm test",
+    "test:e2e": "node tests/e2e/run.cjs",
+    "backend": "cd tests/backend && npm install --no-audit --no-fund && npm run serve",
+    "build:preview": "vite build --mode artifact"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "lucide-react": "^1.70.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "write-excel-file": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.2.1",
+    "autoprefixer": "^10.6.2",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vite-plugin-singlefile": "^2.3.4",
+    "vitest": "^5.1.0"
+  }
+}

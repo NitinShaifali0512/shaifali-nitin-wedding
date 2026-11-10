@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-e2e
+dist-preview
+dist-pages
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vercel
+.netlify
+tests/e2e/screenshots
+tests/e2e/last-run.json
+tests/backend/node_modules

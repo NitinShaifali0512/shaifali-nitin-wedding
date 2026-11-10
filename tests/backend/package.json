@@ -1,0 +1,13 @@
+{
+  "name": "wedding-backend-tests",
+  "private": true,
+  "type": "module",
+  "description": "A local stand-in for Supabase, built on real PostgreSQL (PGlite), used to test the security rules and the dashboard end to end.",
+  "scripts": {
+    "test": "node --test --test-reporter=spec security.test.mjs",
+    "serve": "node serve.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.3.0"
+  }
+}

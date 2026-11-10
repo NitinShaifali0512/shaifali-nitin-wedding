@@ -1,0 +1,15 @@
+# Used by Cloudflare Pages (Netlify and Vercel read netlify.toml and vercel.json instead).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/media/*
+  Cache-Control: public, max-age=604800
+
+/admin
+  X-Robots-Tag: noindex, nofollow

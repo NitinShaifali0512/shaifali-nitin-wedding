@@ -1,0 +1,6 @@
+# This is a private family invitation. Search engines are asked not to list it
+# (see the "robots" meta tag in index.html). Link-preview crawlers such as
+# WhatsApp are allowed, so the invitation still shows a preview when shared.
+User-agent: *
+Allow: /
+Disallow: /admin
